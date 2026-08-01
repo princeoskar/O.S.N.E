@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Count App</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1565c0">
+
+<style>
+body{
+font-family:Arial,sans-serif;
+margin:0;
+background:#f4f4f4;
+}
+
+header{
+background:#1565c0;
+color:#fff;
+padding:15px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.container{
+max-width:900px;
+margin:auto;
+padding:20px;
+}
+
+.card{
+background:#fff;
+padding:20px;
+border-radius:10px;
+margin-bottom:20px;
+box-shadow:0 2px 5px rgba(0,0,0,.2);
+}
+
+input{
+width:100%;
+padding:10px;
+margin:5px 0;
+box-sizing:border-box;
+}
+
+button{
+padding:10px 20px;
+background:#1565c0;
+color:white;
+border:none;
+cursor:pointer;
+margin-top:10px;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th,td{
+border:1px solid #ddd;
+padding:8px;
+}
+
+th{
+background:#1565c0;
+color:white;
+}
+
+.hidden{
+display:none;
+}
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<h2>Count App</h2>
+
+<button id="logoutBtn" class="hidden">
+Sign Out
+</button>
+
+</header>
+
+<div class="container">
+
+<div id="loginCard" class="card">
+
+<h3>Sign In</h3>
+
+<input id="username" placeholder="Enter your name">
+
+<button onclick="login()">
+
+Sign In
+
+</button>
+
+</div>
+
+<div id="appCard" class="hidden">
+
+<div class="card">
+
+<h3>New Count</h3>
+
+<input id="date" type="date">
+
+<input id="cash" type="number" placeholder="Cash">
+
+<input id="system" type="number" placeholder="System">
+
+<input id="till" type="number" placeholder="Till">
+
+<button onclick="saveRecord()">
+
+Save
+
+</button>
+
+</div>
+
+<div class="card">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Date</th>
+
+<th>Cash</th>
+
+<th>System</th>
+
+<th>Till</th>
+
+</tr>
+
+</thead>
+
+<tbody id="records">
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+if("serviceWorker" in navigator){
+
+navigator.serviceWorker.register("sw.js");
+
+}
+
+let user=localStorage.getItem("user");
+
+if(user){
+
+showApp();
+
+}
+
+function login(){
+
+const name=username.value.trim();
+
+if(!name)return;
+
+localStorage.setItem("user",name);
+
+showApp();
+
+}
+
+function logout(){
+
+localStorage.removeItem("user");
+
+location.reload();
+
+}
+
+logoutBtn.onclick=logout;
+
+function showApp(){
+
+loginCard.classList.add("hidden");
+
+appCard.classList.remove("hidden");
+
+logoutBtn.classList.remove("hidden");
+
+loadRecords();
+
+}
+
+function saveRecord(){
+
+const list=JSON.parse(localStorage.getItem("records")||"[]");
+
+list.push({
+
+date:date.value,
+
+cash:cash.value,
+
+system:system.value,
+
+till:till.value
+
+});
+
+localStorage.setItem("records",JSON.stringify(list));
+
+loadRecords();
+
+}
+
+function loadRecords(){
+
+records.innerHTML="";
+
+const list=JSON.parse(localStorage.getItem("records")||"[]");
+
+list.forEach(r=>{
+
+records.innerHTML+=`
+
+<tr>
+
+<td>${r.date}</td>
+
+<td>${r.cash}</td>
+
+<td>${r.system}</td>
+
+<td>${r.till}</td>
+
+</tr>
+
+`;
+
+});
+
+}
+
+</script>
+
+</body>
+
+</html>
